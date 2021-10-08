@@ -54,14 +54,21 @@ def display_map(tmapper=None, yes=False, lat=None, long=None, n=None, tile='Stam
             'fillColor': other_cm(x['properties']['cluster prediction']),
             'color': 'gray',
             'weight': 2.5,
-            'fillOpacity': 0.5
+            'fillOpacity': 0.35
         }
-        folium.GeoJson(gpddata, style_function=style_function, tooltip=folium.GeoJsonTooltip(
+
+        highlight_function = lambda x: {'fillColor': '#000000',
+                                'color':'#000000',
+                                'fillOpacity': 0.4,
+                                'weight': 0.5}
+
+        folium.GeoJson(gpddata, style_function=style_function, highlight_function=highlight_function,
+            tooltip=folium.GeoJsonTooltip(
             fields=['city', 'cluster prediction',  'cluster 1 probability',
                      'cluster 2 probability',
                      'cluster 3 probability',
                      'cluster 4 probability',
-                     'cluster 5 probability'],
+                     'cluster 5 probability', 'crime index', 'wealth index'],
             localize=True
         )).add_to(m)
 
@@ -70,11 +77,9 @@ def display_map(tmapper=None, yes=False, lat=None, long=None, n=None, tile='Stam
 
         folium.LayerControl().add_to(m)
 
-        folium.Marker(location=[lat, long],
-        popup="""
-                      <i>BC Concentration: </i> <br> <b>{}, {}</b> ug/m3 <br> <hr>
-                      """.format(
-                        lat, long),
+        folium.Marker(location=[lat, long], draggable=False,
+        popup="""lat: {}, long: {}""".format(
+                        round(lat, 3), round(long, 3)),
                       icon=folium.Icon()).add_to(m)
 
     else:
@@ -120,6 +125,8 @@ def main():
     else:
         display_map()
 
+    st.text("")
+    st.markdown("Demographic Data")
     st.text("")
     df = tmapper.compare_demographics()
     st.dataframe(df)

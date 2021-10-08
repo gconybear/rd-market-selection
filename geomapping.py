@@ -21,6 +21,7 @@ class TractMapper:
         self.data.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
 
         self.dem_data = pd.read_csv('data/all_tracts_and_demographics.csv').drop('Unnamed: 0', axis=1).rename(columns={'request': 'zoneid'})
+        self.composite_df = pd.read_csv('data/composite_variables.csv')
 
         self.btree = BallTree(np.deg2rad(self.data[['latitude', 'longitude']]))
 
@@ -33,7 +34,9 @@ class TractMapper:
         nnearest = self.btree.query(point, n, return_distance=False)[0]
         nnearest = self.data.iloc[nnearest, :]
         self.nearest = nnearest
-        return nnearest
+        self.nearest = pd.merge(self.composite_df, self.nearest, on='zoneid')
+
+        return self.nearest
 
     def compare_demographics(self, sort='max'):
         mask = self.dem_data['zoneid'].isin(self.nearest['zoneid']).values
@@ -41,7 +44,7 @@ class TractMapper:
         other = self.dem_data[~mask]
 
         data = pd.DataFrame({
-            'current clusters': merged.mean().values,
+            'current neighborhoods': merged.mean().values,
             'national avg': other.mean().values
         })
 
