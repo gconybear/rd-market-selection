@@ -8,5 +8,5 @@ def parse_address_string(addy):
     try:
         return {'lat': location.latitude, 'long': location.longitude}
     except Exception as e:
-        print(f"{e=}")
+        # print(f"{e=}")
         return None
