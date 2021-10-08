@@ -125,7 +125,6 @@ pony==0.7.14
 prometheus-client==0.11.0
 prompt-toolkit==3.0.20
 protobuf==3.17.3
-psycopg2==2.9.1
 pyarrow==5.0.0
 pycodestyle==2.7.0
 pycparser==2.20
